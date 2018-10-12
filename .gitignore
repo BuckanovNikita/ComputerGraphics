@@ -102,3 +102,16 @@ venv.bak/
 
 # mypy
 .mypy_cache/
+*.xml
+*.xml
+*.bin
+*.exe
+*cmake* 
+.cmake-build-debug/
+*.xml
+*.cmake
+*.xml
+*.xml
+*.xml
+*.xml
+*.xml
