@@ -1,0 +1,5 @@
+"C:\Program Files\JetBrains\CLion 2018.2.4\bin\cmake\win\bin\cmake.exe" -DCMAKE_BUILD_TYPE=Debug -G "CodeBlocks - MinGW Makefiles" D:\SourceCode\computer_grafics\OpenGL_2
+-- Found GLUT: C:/MinGW/glut32.lib  
+-- Configuring done
+-- Generating done
+-- Build files have been written to: D:/SourceCode/computer_grafics/OpenGL_2/cmake-build-debug
