@@ -2,12 +2,15 @@ from OpenGL.GL import *
 from OpenGL.GLU import *
 from OpenGL.GLUT import *
 import numpy as np
+from itertools import product
 
 
 LOOK_AT = np.array([2, 2, 0.0, 0.0, 0.0, 0.0, 0.0, 1, 0.0])
 
 n = [[1.0, 0.0, 0.0], [0.0, -1.0, 0.0], [-1.0, 0.0, 0.0],
      [0.0, 1.0, 0.0], [0.0, 0.0, 1.0], [0.0, 0.0, -1.0]]
+
+N = 20
 
 v = np.zeros((8, 3))
 v[0][0] = v[1][0] = v[2][0] = v[3][0] = -1
@@ -79,7 +82,7 @@ def draw_cube():
     glVertex3d(0.0, 1.0, 1.0)
     glEnd()
 
-    #cube2
+    # cube2
     glPushMatrix()
     glTranslate(0.5, 0.5, 0.5)
     glutWireCube(1)
@@ -192,8 +195,25 @@ def draw_cube():
     glVertex3d(*(v1 + y))
     glEnd()
 
+    d = np.array([0, 0, 4])
+    x = np.linspace(0, 1, N)
 
-def special(key, x, y):
+    xox = [[(t[0], t[1], 0) for t in product(x, x)], [(t[0], t[1], 1) for t in product(x, x)],
+           [(t[0], 0, t[1]) for t in product(x, x)], [(t[0], 1, t[1]) for t in product(x, x)],
+           [(0, t[0], t[1]) for t in product(x, x)], [(1, t[0], t[1]) for t in product(x, x)]]
+
+    for xOy in xox:
+        for i in range(N-1):
+            for j in range(N-1):
+                glBegin(GL_QUADS)
+                glVertex(d + xOy[i * N + j])
+                glVertex(d + xOy[i * N + j + 1])
+                glVertex(d + xOy[(i + 1) * N + j + 1])
+                glVertex(d + xOy[(i + 1) * N + j])
+                glEnd()
+
+
+def special(key, _, __):
     print(key)
     if key == 101:
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
@@ -217,13 +237,23 @@ def special(key, x, y):
     pass
 
 
-lmodel_ambient_enabled = GLfloat_4( 1.0, 1.0, 1.0, 1.0)
-lmodel_ambient_disabled = GLfloat_4( 0.0, 0.0, 0.0, 0.0 )
+lmodel_ambient_enabled = GLfloat_4(1.0, 1.0, 1.0, 1.0)
+lmodel_ambient_disabled = GLfloat_4(0.0, 0.0, 0.0, 0.0)
 local_view = [1.0]
 
 
-def keyboard(key, x, y):
+def keyboard(key, _, __):
     mat_emission = GLfloat_3(0.1, 0, 0)
+    if key == b'l':
+        glDisable(GL_LIGHT3)
+        glMaterialfv(GL_FRONT, GL_DIFFUSE, [0, 0, 0])
+        glMaterialfv(GL_FRONT, GL_SPECULAR, [0, 0, 0])
+        glutPostRedisplay()
+
+    if key == b'k':
+        glEnable(GL_LIGHT3)
+        glMaterialfv(GL_FRONT, GL_DIFFUSE, [1, 1, 1])
+        glutPostRedisplay()
 
     if key == b'1':
         glDisable(GL_LIGHT1)
@@ -245,8 +275,15 @@ def keyboard(key, x, y):
 
     if key == b'3':
         glDisable(GL_LIGHT1)
+        glMaterialfv(GL_FRONT, GL_SPECULAR, matZero)
+        glMaterialfv(GL_FRONT, GL_DIFFUSE, matZero)
+        glMaterialfv(GL_FRONT, GL_AMBIENT, matZero)
+        glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, matZero)
+        glMaterialfv(GL_FRONT, GL_EMISSION, matZero)
         glLightfv(GL_LIGHT0, GL_POSITION, light_position)
         glLightfv(GL_LIGHT0, GL_SPECULAR, SpecularLight)
+        glLightfv(GL_LIGHT0, GL_DIFFUSE, matZero)
+        glLightfv(GL_LIGHT0, GL_AMBIENT, matZero)
         glMaterialfv(GL_FRONT, GL_SPECULAR, matZero)
         glMaterialfv(GL_FRONT, GL_DIFFUSE, matDiff)
         glEnable(GL_LIGHT0)
@@ -262,12 +299,12 @@ def keyboard(key, x, y):
         glutPostRedisplay()
 
     if key == b'6':
-        glLightModelfv(GL_LIGHT_MODEL_AMBIENT, 1)
+        glLightModelfv(GL_LIGHT_MODEL_AMBIENT, [1, 1, 1])
         glLightModeli(GL_LIGHT_MODEL_LOCAL_VIEWER, GL_FALSE)
         glutPostRedisplay()
 
     if key == b'7':
-        glLightModelfv(GL_LIGHT_MODEL_LOCAL_VIEWER, local_view)
+        glLightModelfv(GL_LIGHT_MODEL_LOCAL_VIEWER, GL_TRUE)
         glutPostRedisplay()
 
     if key == b'9':
@@ -279,7 +316,6 @@ def keyboard(key, x, y):
         glutPostRedisplay()
 
     if key == b'q':
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
         glMaterialfv(GL_FRONT, GL_EMISSION, matZero)
         glShadeModel(GL_SMOOTH)
         glutPostRedisplay()
@@ -293,22 +329,44 @@ def display():
 
 def init():
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
-    glEnable(GL_LIGHT0)
+
     glEnable(GL_LIGHTING)
-    glLightfv(GL_LIGHT0, GL_POSITION, light_position)
-    glLightfv(GL_LIGHT0, GL_DIFFUSE, [1, 1, 1])
-    glMaterialfv(GL_FRONT, GL_DIFFUSE, [1, 1, 1])
+    glEnable(GL_LIGHT3)
+    glLightfv(GL_LIGHT3, GL_POSITION, light_position)
+    glLightfv(GL_LIGHT3, GL_DIFFUSE, [1, 1, 1])
     glEnable(GL_DEPTH_TEST)
     glMatrixMode(GL_PROJECTION)
+    glLoadIdentity()
     gluPerspective(120.0, 16.0/9.0, 1.0, 10.0)
     gluLookAt(*LOOK_AT)
     glMatrixMode(GL_MODELVIEW)
 
 
+W = 1600
+H = 900
+dx_min = 100
+sensitivity = 0.005
+
+
+def mouse(x, y):
+    dx = x-W/2
+    dy = y-H/2
+    if abs(dx) > 300:
+        glMatrixMode(GL_PROJECTION)
+        glRotate(dx*sensitivity, 0, 1, 0)
+        glMatrixMode(GL_MODELVIEW)
+        glutPostRedisplay()
+    if abs(dy) > 300:
+        glMatrixMode(GL_PROJECTION)
+        glRotate(dy * sensitivity, 1, 0, 0)
+        glMatrixMode(GL_MODELVIEW)
+        glutPostRedisplay()
+
+
 if __name__ == '__main__':
     glutInit(sys.argv)
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH)
-    glutInitWindowSize(800, 450)
+    glutInitWindowSize(W, H)
     glutInitWindowPosition(0, 0)
     glutCreateWindow(b"lab2")
     glEnable(GL_NORMALIZE)
@@ -316,5 +374,5 @@ if __name__ == '__main__':
     glutDisplayFunc(display)
     glutKeyboardFunc(keyboard)
     glutSpecialFunc(special)
-
+    glutPassiveMotionFunc(mouse)
     glutMainLoop()
