@@ -195,22 +195,38 @@ def draw_cube():
     glVertex3d(*(v1 + y))
     glEnd()
 
-    d = np.array([0, 0, 4])
+    '''d = np.array([0, 0, 4])
     x = np.linspace(0, 1, N)
 
     xox = [[(t[0], t[1], 0) for t in product(x, x)], [(t[0], t[1], 1) for t in product(x, x)],
            [(t[0], 0, t[1]) for t in product(x, x)], [(t[0], 1, t[1]) for t in product(x, x)],
            [(0, t[0], t[1]) for t in product(x, x)], [(1, t[0], t[1]) for t in product(x, x)]]
+    #norm = [[(0, 0, 1), (0, 0, 1), (0, 0, 1), (0, 0, 1)], [(0, 0, -1), (0, 0, -1), (0, 0, -1), (0, 0, -1)],
+    #        [(0, 1, 0), (0, 1, 0), (0, 1, 0), (0, 1, 0)], [(0, -1, 0), (0, -1, 0), (0, -1, 0), (0, -1, 0)],
+    #        [(1, 0, 0), (1, 0, 0), (1, 0, 0), (1, 0, 0)], [(-1, 0, 0), (-1, 0, 0), (-1, 0, 0), (-1, 0, 0)]]
+
+    center = np.array([0.5, 0.5, 0.5]) + d
 
     for xOy in xox:
         for i in range(N-1):
             for j in range(N-1):
                 glBegin(GL_QUADS)
+                a = xOy[N*N-1]
+                b = xOy[N-1]
+                if i < j:
+                    c = xOy[0]
+                else:
+                    c = xOy[(N-1)*(N-1)]
+                s = 1/2
+                p = xOy[i * N + j]
+                alpha = p[1]/2
+                beta = p[2]/2
+                gamma = 1/2 - p[1]/2 - p[2]/2
                 glVertex(d + xOy[i * N + j])
                 glVertex(d + xOy[i * N + j + 1])
                 glVertex(d + xOy[(i + 1) * N + j + 1])
                 glVertex(d + xOy[(i + 1) * N + j])
-                glEnd()
+                glEnd()'''
 
 
 def special(key, _, __):
@@ -243,7 +259,49 @@ local_view = [1.0]
 
 
 def keyboard(key, _, __):
+
     mat_emission = GLfloat_3(0.1, 0, 0)
+
+    if key == b'w':
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
+        LOOK_AT[2] -= 1
+        glMatrixMode(GL_PROJECTION)
+        glLoadIdentity()
+        gluPerspective(120, 16 / 9, 0.5, 25)
+        gluLookAt(*LOOK_AT)
+        glMatrixMode(GL_MODELVIEW)
+        glutPostRedisplay()
+
+    if key == b's':
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
+        LOOK_AT[2] += 1
+        glMatrixMode(GL_PROJECTION)
+        glLoadIdentity()
+        gluPerspective(120, 16 / 9, 0.5, 25)
+        gluLookAt(*LOOK_AT)
+        glMatrixMode(GL_MODELVIEW)
+        glutPostRedisplay()
+
+    if key == b'd':
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
+        LOOK_AT[0] += 1
+        glMatrixMode(GL_PROJECTION)
+        glLoadIdentity()
+        gluPerspective(120, 16 / 9, 0.5, 25)
+        gluLookAt(*LOOK_AT)
+        glMatrixMode(GL_MODELVIEW)
+        glutPostRedisplay()
+
+    if key == b'a':
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
+        LOOK_AT[0] -= 1
+        glMatrixMode(GL_PROJECTION)
+        glLoadIdentity()
+        gluPerspective(120, 16 / 9, 0.5, 25)
+        gluLookAt(*LOOK_AT)
+        glMatrixMode(GL_MODELVIEW)
+        glutPostRedisplay()
+
     if key == b'l':
         glDisable(GL_LIGHT3)
         glMaterialfv(GL_FRONT, GL_DIFFUSE, [0, 0, 0])

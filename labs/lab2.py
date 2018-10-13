@@ -89,7 +89,6 @@ def scene_1():
 
     glFlush()
 
-
 def scene_2():
     np.random.seed(100)
     for i in range(3):
@@ -173,6 +172,7 @@ def scene_3():
     scene_2()
     glPopMatrix()
     glFlush()
+    glutSwapBuffers()
 
 
 def display():
@@ -190,7 +190,8 @@ def reshape(w, h):
     glMatrixMode(GL_MODELVIEW)
 
 
-def keyboard(key, x, y):
+def keyboard(key, _, __):
+    print(key)
     if key == b'4':
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
         glMatrixMode(GL_PROJECTION)
@@ -277,7 +278,7 @@ def keyboard(key, x, y):
 if __name__ == '__main__':
     glutInit(sys.argv)
 
-    glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB)
+    glutInitDisplayMode(GLUT_DOUBLE |  GLUT_RGB)
     glutInitWindowSize(800, 450)
     glutInitWindowPosition(0, 0)
     glutCreateWindow(b"Cube")
