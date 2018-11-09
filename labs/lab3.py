@@ -403,7 +403,7 @@ def init():
 W = 1600
 H = 900
 dx_min = 100
-sensitivity = 0.005
+sensitivity = 0.0001
 
 
 def mouse(x, y):

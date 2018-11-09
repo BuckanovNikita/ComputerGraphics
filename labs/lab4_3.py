@@ -2,123 +2,148 @@ from OpenGL.GL import *
 from OpenGL.GLUT import *
 from OpenGL.GLU import *
 import numpy as np
-from numpy import sin, cos, pi
-from lab4 import read_texture
-from lab3 import mouse
+from PIL import Image
 
-mat_emission = GLfloat_3(0.5, 0.5, 0.5)
+angle_x = 0
+angle_y = 0
+angle_z = 0
 
 
-def scene_3(n = 100, m = 100, r = 2):
+def init():
+    glClearColor(0.9, 0.9, 0.8, 0.0)
+    glEnable(GL_DEPTH_TEST)
+    glEnable(GL_AUTO_NORMAL)
+    light_ambient = [0.1, 0.1, 0.1, 1.0]
+    light_diffuse = [0.9, 0.8, 0.9, 1.0]
+    light_position = [1.0, 1.0, 1.0, 0.0]
+
+    glLightfv(GL_LIGHT0, GL_AMBIENT, light_ambient)
+    glLightfv(GL_LIGHT0, GL_DIFFUSE, light_diffuse)
+    glLightfv(GL_LIGHT0, GL_POSITION, light_position)
+    glEnable(GL_LIGHT0)
+    glTexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_SPHERE_MAP)
+    glTexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_SPHERE_MAP)
+    glEnable(GL_TEXTURE_GEN_S)
+    glEnable(GL_TEXTURE_GEN_T)
+
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT)
-    read_texture('tex/brick.bmp')
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST)
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST)
     glEnable(GL_TEXTURE_2D)
 
-    for j in range(n):
-        phi1 = j * (2 * pi) / n
-        phi2 = (j + 1) * (2 * pi) / n
-        glBegin(GL_QUAD_STRIP)
-        for i in range(m + 1):
-            theta = i * pi / n
-            ex = sin(theta) * cos(phi2)
-            ey = sin(theta) * sin(phi2)
-            ez = cos(theta)
-            s = phi2 / (2 * pi)
-            t = 1 - theta / pi
-            glTexCoord2f(4*s, 4*t)
-            glVertex3f(r*ex, r*ey, r*ez)
-            ex = sin(theta) * cos(phi1)
-            ey = sin(theta) * sin(phi1)
-            ez = cos(theta)
-            s = phi1 / (2 * pi)
-            t = 1 - theta / pi
-            glTexCoord2f(4*s, 4*t)
-            glVertex3f(r * ex, r * ey, r * ez)
-        glEnd()
-    glDisable(GL_TEXTURE_2D)
+
+def rotate():
+    glRotatef(angle_x, 1.0, 0.0, 0.0)
+    glRotatef(angle_y, 0.0, 1.0, 0.0)
+    glRotatef(angle_z, 0.0, 0.0, 1.0)
+
+
+def draw_scene():
+    glDisable(GL_LIGHTING)
+    glPushMatrix()
+    glTranslatef(2, 0.5, 0.5)
+    glRotatef(45, 1, 1, 1)
+
+    image = Image.open('tex/brick.bmp')
+    image_data = np.array(list(image.getdata()), np.uint8)
+
+    glGenTextures(2)
+    glPixelStorei(GL_UNPACK_ALIGNMENT, 4)
+    glBindTexture(GL_TEXTURE_2D, 2)
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST)
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST)
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, image.size[0], image.size[1], 0, GL_RGB, GL_UNSIGNED_BYTE, image_data)
+    glTexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_OBJECT_LINEAR)
+    glTexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_OBJECT_LINEAR)
+    glEnable(GL_TEXTURE_GEN_S)
+    glEnable(GL_TEXTURE_GEN_T)
+    image.close()
+
+    glutSolidCube(0.2)
+    glPopMatrix()
+
+    glBindTexture(GL_TEXTURE_2D, 1)
+    glTexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_SPHERE_MAP)
+    glTexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_SPHERE_MAP)
+    glEnable(GL_TEXTURE_GEN_S)
+    glEnable(GL_TEXTURE_GEN_T)
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT)
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT)
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST)
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST)
+    glEnable(GL_LIGHTING)
+
+
+def display():
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
+    glLoadIdentity()
+    gluLookAt(0, 0, 0, 5, 0, 0, 0, 0, 1)
+    glScalef(1, -1, 1)
+    rotate()
+    draw_scene()
+    glCopyTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 0, 0, 500, 500, 0)
+
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
+    glLoadIdentity()
+    gluLookAt(5, 0, 0, 0, 0, 0, 0, 0, 1)
+    rotate()
+    draw_scene()
+    glutSolidSphere(1.0, 20, 20)
     glFlush()
     glutSwapBuffers()
 
 
-def reshape(w, h):
-    glViewport(0, 0, GLsizei(w), GLsizei(h))
-    glClearColor(0.0, 0.0, 0.0, 0.0)
-    glMatrixMode(GL_PROJECTION)
-    glLoadIdentity()
-    gluPerspective(120.0, 16.0 / 9.0, 1.0, 10.0)
-    glMatrixMode(GL_MODELVIEW)
-
-
-def display():
-    pass
-
-
-LOOK_AT = np.array([0, 0, 0.0, 0.0, 0.0, 0.0, 0.0, 1, 0.0])
-
-
 def keyboard(key, _, __):
-    print(key)
-    if key == b'w':
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
-        LOOK_AT[2] -= 1
-        glMatrixMode(GL_PROJECTION)
-        glLoadIdentity()
-        gluPerspective(120, 16 / 9, 0.5, 25)
-        gluLookAt(*LOOK_AT)
-        glMatrixMode(GL_MODELVIEW)
-        glutPostRedisplay()
-
-    if key == b's':
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
-        LOOK_AT[2] += 1
-        glMatrixMode(GL_PROJECTION)
-        glLoadIdentity()
-        gluPerspective(120, 16 / 9, 0.5, 25)
-        gluLookAt(*LOOK_AT)
-        glMatrixMode(GL_MODELVIEW)
-        glutPostRedisplay()
-
-    if key == b'd':
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
-        LOOK_AT[0] += 1
-        glMatrixMode(GL_PROJECTION)
-        glLoadIdentity()
-        gluPerspective(120, 16 / 9, 0.5, 25)
-        gluLookAt(*LOOK_AT)
-        glMatrixMode(GL_MODELVIEW)
-        glutPostRedisplay()
+    global angle_x
+    global angle_y
+    global angle_z
+    if key == b'z':
+        angle_x = (angle_x + 3) % 360
 
     if key == b'a':
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
-        LOOK_AT[0] -= 1
-        glMatrixMode(GL_PROJECTION)
-        glLoadIdentity()
-        gluPerspective(120, 16 / 9, 0.5, 25)
-        gluLookAt(*LOOK_AT)
-        glMatrixMode(GL_MODELVIEW)
-        glutPostRedisplay()
+        angle_x = (angle_x - 3) % 360
+
+    if key == b'x':
+        angle_y = (angle_y + 3) % 360
+
+    if key == b's':
+        angle_y = (angle_y - 3) % 360
+
+    if key == b'c':
+        angle_z = (angle_z + 3) % 360
+
+    if key == b'd':
+        angle_z = (angle_z - 3) % 360
+
+    if key == b'r':
+        angle_x = 0
+        angle_y = 0
+        angle_z = 0
+
+    if key == b'27':
+        exit(0)
+    glutPostRedisplay()
+
+
+def reshape(w, h):
+    glViewport(0, 0, w, h)
+    glMatrixMode(GL_PROJECTION)
+    glLoadIdentity()
+    gluPerspective(60.0, float(w / h), 1.0, 30.0)
+    glMatrixMode(GL_MODELVIEW)
+    glLoadIdentity()
+    glTranslatef(0.0, 0.0, -5.0)
 
 
 if __name__ == '__main__':
     glutInit(sys.argv)
 
-    glutInitDisplayMode(GLUT_DOUBLE |  GLUT_RGB)
-    glutInitWindowSize(800, 450)
-    glutInitWindowPosition(0, 0)
-    glutCreateWindow(b"lab4")
-
-    glClearColor(0.0, 0.0, 0.0, 0.0)
-    glEnable(GL_DEPTH_TEST)
-    glEnable(GL_LIGHTING)
-    glEnable(GL_LIGHT0)
-    glMaterialfv(GL_FRONT, GL_EMISSION, mat_emission)
-    glMatrixMode(GL_PROJECTION)
-    glLoadIdentity()
-    gluPerspective(120.0, 16.0 / 9.0, 1.0, 10.0)
-    glMatrixMode(GL_MODELVIEW)
-    glutDisplayFunc(scene_3)
+    glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH)
+    glutInitWindowSize(500, 500)
+    glutCreateWindow(b'lab4_3')
+    init()
+    glutDisplayFunc(display)
     glutReshapeFunc(reshape)
     glutKeyboardFunc(keyboard)
-    glutPassiveMotionFunc(mouse)
     glutMainLoop()

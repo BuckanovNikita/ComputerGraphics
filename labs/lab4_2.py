@@ -9,12 +9,11 @@ from lab3 import mouse
 mat_emission = GLfloat_3(0.5, 0.5, 0.5)
 
 
-def scene_3(n = 100, m = 100, r = 2):
+def scene_3(n=100, m=100, r=2):
+    glEnable(GL_TEXTURE_2D)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT)
     read_texture('tex/brick.bmp')
-    glEnable(GL_TEXTURE_2D)
-
     for j in range(n):
         phi1 = j * (2 * pi) / n
         phi2 = (j + 1) * (2 * pi) / n
@@ -61,7 +60,7 @@ def keyboard(key, _, __):
     print(key)
     if key == b'w':
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
-        LOOK_AT[2] -= 1
+        LOOK_AT[2] -= 0.1
         glMatrixMode(GL_PROJECTION)
         glLoadIdentity()
         gluPerspective(120, 16 / 9, 0.5, 25)
@@ -71,7 +70,7 @@ def keyboard(key, _, __):
 
     if key == b's':
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
-        LOOK_AT[2] += 1
+        LOOK_AT[2] += 0.1
         glMatrixMode(GL_PROJECTION)
         glLoadIdentity()
         gluPerspective(120, 16 / 9, 0.5, 25)
@@ -81,7 +80,7 @@ def keyboard(key, _, __):
 
     if key == b'd':
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
-        LOOK_AT[0] += 1
+        LOOK_AT[0] += 0.1
         glMatrixMode(GL_PROJECTION)
         glLoadIdentity()
         gluPerspective(120, 16 / 9, 0.5, 25)
@@ -91,7 +90,7 @@ def keyboard(key, _, __):
 
     if key == b'a':
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
-        LOOK_AT[0] -= 1
+        LOOK_AT[0] -= 0.1
         glMatrixMode(GL_PROJECTION)
         glLoadIdentity()
         gluPerspective(120, 16 / 9, 0.5, 25)
