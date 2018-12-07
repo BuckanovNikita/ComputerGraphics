@@ -117,3 +117,12 @@ venv.bak/
 *.xml
 *.xml
 labs/.idea/workspace.xml
+*.tlog
+*.user
+*.obj
+*.dll
+*.vcproj
+*.filters
+*.idb
+*.lib
+*.pdb

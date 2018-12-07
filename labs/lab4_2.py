@@ -3,7 +3,7 @@ from OpenGL.GLUT import *
 from OpenGL.GLU import *
 import numpy as np
 from numpy import sin, cos, pi
-from lab4 import read_texture
+from lab4_1 import read_texture
 from lab3 import mouse
 
 mat_emission = GLfloat_3(0.5, 0.5, 0.5)
@@ -102,7 +102,7 @@ def keyboard(key, _, __):
 if __name__ == '__main__':
     glutInit(sys.argv)
 
-    glutInitDisplayMode(GLUT_DOUBLE |  GLUT_RGB)
+    glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB)
     glutInitWindowSize(800, 450)
     glutInitWindowPosition(0, 0)
     glutCreateWindow(b"lab4")
