@@ -2,9 +2,9 @@ from OpenGL.GL import *
 from OpenGL.GLUT import *
 from OpenGL.GLU import *
 
-Mx = -0.5
-My = 0.0
-Mz = 3.0
+m_x = -0.5
+m_y = 0.0
+m_z = 3.0
 
 angle_x = 0
 angle_y = 0
@@ -20,11 +20,12 @@ def scene():
 
 
 def mirror(type_):
+    glLineWidth(10)
     glBegin(type_)
-    glVertex3f(Mx, My - 1, Mz - 2.0)
-    glVertex3f(Mx, My - 1, Mz + 2.0)
-    glVertex3f(Mx, My + 1, Mz + 2.0)
-    glVertex3f(Mx, My + 1, Mz - 2.0)
+    glVertex3f(m_x, m_y - 1, m_z - 2.0)
+    glVertex3f(m_x, m_y - 1, m_z + 2.0)
+    glVertex3f(m_x, m_y + 1, m_z + 2.0)
+    glVertex3f(m_x, m_y + 1, m_z - 2.0)
     glEnd()
 
 
@@ -58,9 +59,9 @@ def display():
     scene()
 
     glStencilFunc(GL_EQUAL, 1, 1)
-    glTranslatef(Mx, My, Mz)
+    glTranslatef(m_x, m_y, m_z)
     glScalef(-1.0, 1.0, 1.0)
-    glTranslatef(-Mx, -My, -Mz)
+    glTranslatef(-m_x, -m_y, -m_z)
     scene()
 
     glutSwapBuffers()
@@ -97,7 +98,6 @@ def keyboard(key, x, y):
     if key == b'q':
         exit(0)
 
-    print(key, angle_x, angle_y, angle_z)
     glutPostRedisplay()
 
 

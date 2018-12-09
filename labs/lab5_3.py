@@ -21,6 +21,7 @@ def scene():
 
 
 def mirror(type_):
+    glLineWidth(10)
     glBegin(type_)
     n = 100
     for i in range(2*n):

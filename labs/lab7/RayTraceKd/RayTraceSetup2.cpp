@@ -284,14 +284,12 @@ void SetUpViewableObjects() {
 	txc2->SetWidths(0.0625, 0.125);
 	vs->TextureMap(txc2);
 
-	/*// Right checkered sphere
 	vs = new ViewableSphere();
 	vs->SetCenter(7.0, 0.5, -4.0);
 	vs->SetRadius(3);
 	vs->SetMaterial(&TheScene2.GetMaterial(3));
 	int smallRightSphereIdx = TheScene2.AddViewable(vs);
 	vs->TextureMap(txc2);
-	vs->SetuvCylindrical();		// SetuvSpherical is the default*/
-
+	vs->SetuvCylindrical();
 }
 

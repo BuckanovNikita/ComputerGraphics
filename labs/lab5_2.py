@@ -21,7 +21,6 @@ def extend(light, vertex, t):
 
 
 def make_shadow(obj, light, t, list_ind):
-
     glNewList(list_ind, GL_COMPILE)
     glDisable(GL_LIGHTING)
     glBegin(GL_QUADS)
@@ -51,7 +50,6 @@ def render(obj):
     glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, obj_mat)
     glBegin(GL_POLYGON)
     glNormal3fv(obj.normal)
-
     for i in range(obj.n):
         glVertex3fv(obj.vertex[3*i:3*(i+1)])
     glEnd()

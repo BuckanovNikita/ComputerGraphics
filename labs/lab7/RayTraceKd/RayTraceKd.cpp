@@ -19,6 +19,7 @@
  */
 
 #include <math.h>
+#include <time.h>
 #include <limits.h>
 #include <stdio.h>
 
@@ -91,7 +92,8 @@ SceneDescription FileScene;			// Scene that is loaded from an .obj or .nff file.
 
 // RenderScene() chooses between using OpenGL or  ray-tracing to render the scene
 static void RenderScene(void)
-{
+{	
+	clock_t start = clock();
 	if ( WindowMinimized ) {
 		return;
 	}
@@ -102,6 +104,7 @@ static void RenderScene(void)
 		GlutRenderer newGlutter;
 		newGlutter.RenderScene(*ActiveScene);
 	}
+	fprintf(stdout, "Time:%d \n", (-start + clock()));
 }
 
 // ******************************************************
@@ -435,15 +438,17 @@ static void ResizeWindow(int w, int h)
 // *******************************************************************
 void myKeyboardFunc( unsigned char key, int x, int y )
 {
+	clock_t start = clock();
 	switch ( key ) {
-
 	case 'g':							// "g" command
-	case ' ':							// Space bar
+	case ' ':	
+		
 		// Set to be in Ray Trace mode
 		if ( !RayTraceMode ) {
 			RayTraceMode = true;
 			glutPostRedisplay();
 		}
+		
 		break;
 	case 'G':							// 'G' command
 		// Set to be rendering with OpenGL
@@ -521,7 +526,7 @@ void InitializeSceneGeometry()
 // One of the following three lines should un-commented to select the way
 //		the scene is loaded into the SceneDescription.
 //#define MODE 1  /* Use this line to manually set the scene in RayTraceSetup2.cpp */
-#define MODE 1  /* Use this line to load the scene data from an .obj file. */
+#define MODE 2  /* Use this line to load the scene data from an .obj file. */
 //#define MODE 3  /* Use this line to load the scene data from a .nff file. */
 #if MODE==1
 	SetUpScene2();
